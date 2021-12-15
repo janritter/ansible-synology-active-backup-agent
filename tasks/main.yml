@@ -1,0 +1,62 @@
+---
+
+- name: Install required helper packages
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - wget
+    - zip
+
+- name: Download Active Backup archive
+  get_url:
+    url: "{{ active_backup_download_url }}"
+    dest: /tmp/active-backup-agent.zip
+
+- name: Create unzip dir
+  file:
+    path: /tmp/active-backup-agent
+    state: directory
+
+- name: Extract Active Backup archive
+  unarchive:
+    src: /tmp/active-backup-agent.zip
+    dest: /tmp/active-backup-agent
+    remote_src: yes
+
+- name: Install Active Backup agent
+  shell: ./install.run
+  args:
+    chdir: /tmp/active-backup-agent
+  register: abb_install_results
+  changed_when: "'no need to install' not in abb_install_results.stdout"
+
+- name: Print Active Backup agent installation output when changed
+  debug:
+    var: abb_install_results
+  when: abb_install_results.changed
+
+- name: Get agent version
+  shell: abb-cli -v
+  register: abb_version
+  changed_when: false
+
+- name: Print Active Backup agent version
+  debug:
+    var: abb_version.stdout
+
+- name: Connect to Synology NAS
+  shell: "abb-cli -c -a {{ active_backup_address }} -u {{ active_backup_username }} -p {{ active_backup_password }}"
+  register: abb_connect_results
+  failed_when: "abb_connect_results.rc != 0 and 'Already connected' not in abb_connect_results.stderr"
+  changed_when: "abb_connect_results.rc == 0"
+
+- name: Get server status
+  shell: abb-cli -s
+  register: abb_status
+  changed_when: false
+
+- name: Print Active Backup server status
+  debug:
+    var: abb_status
