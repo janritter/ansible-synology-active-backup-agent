@@ -1,6 +1,6 @@
 ---
 
-active_backup_download_url: "https://global.download.synology.com/download/Utility/ActiveBackupBusinessAgent/2.2.0-2074/Linux/x86_64/Synology%20Active%20Backup%20for%20Business%20Agent-2.2.0-2074-x64-deb.zip"
+active_backup_download_url: "https://global.download.synology.com/download/Utility/ActiveBackupBusinessAgent/2.4.2-2341/Linux/x86_64/Synology%20Active%20Backup%20for%20Business%20Agent-2.4.2-2341-x64-deb.zip"
 
 active_backup_address: 127.0.0.1
 
